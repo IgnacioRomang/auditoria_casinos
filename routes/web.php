@@ -433,7 +433,6 @@ Route::group(['prefix' => 'importaciones','middleware' => 'tiene_permiso:ver_sec
 Route::group(['prefix' => 'cotizacion','middleware' => 'tiene_permiso:cotizar_dolar_peso'], function () {
   Route::get('obtenerCotizaciones/{mes}','CotizacionController@obtenerCotizaciones');
   Route::post('guardarCotizacion','CotizacionController@guardarCotizacion');
-  Route::get('dolarOficial','CotizacionController@dolarOficial');
 });
 /************
 Relevamientos
@@ -657,7 +656,7 @@ Informes
 Route::group(['prefix' => 'informeEstadoParque','middleware' => 'tiene_permiso:ver_seccion_estestadoparque'],function(){
   Route::get('/' , 'informesController@obtenerInformeEstadoParque');
   Route::get('obtenerSector/{id_sector}','SectorController@obtenerSector');
-  Route::get('obtenerEstadoParqueDeCasino','informesController@obtenerInformeEstadoParqueDeParque');
+  Route::get('obtenerEstadoParqueDeCasino/{id_casino}','informesController@obtenerInformeEstadoParqueDeParque');
 });
 
 Route::group(['prefix' => 'informeContableMTM','middleware' => 'tiene_permiso:ver_seccion_informecontable'], function () {
@@ -670,11 +669,6 @@ Route::group(['prefix' => 'informesMTM','middleware' => 'tiene_permiso:informes_
   Route::get('/','informesController@obtenerUltimosBeneficiosPorCasino');
   Route::get('generarPlanilla','informesController@generarPlanilla');
   Route::get('generarPlanillaIslasMaquinas','informesController@generarPlanillaIslasMaquinas');
-});
-
-Route::group(['prefix' => 'informesMesas','middleware' => 'tiene_permiso:informes_mesas'], function () {
-  Route::get('/','Mesas\InformesMesas\BCMensualesController@obtenerInformeMesas');
-  Route::get('generarPlanilla','Mesas\InformesMesas\BCMensualesController@generarPlanillaContable');
 });
 
 Route::group(['prefix' => 'informeSector','middleware' => 'tiene_permiso:ver_seccion_informesector'], function () {
@@ -837,7 +831,7 @@ Route::group(['prefix' => 'importacionDiaria','middleware' => 'tiene_permiso:m_v
   Route::get('eliminarImportacion/{id_imp}','Mesas\Importaciones\ImportadorController@eliminar');
   Route::get('eliminarImportacionCierres/{id_imp}','Mesas\Importaciones\ImportadorController@eliminarCierres');
   Route::post('ajustarDetalle','Mesas\Importaciones\ImportadorController@ajustarDetalle');
-  Route::get('imprimirMensual','Mesas\InformesMesas\BCMensualesController@imprimirMensual');
+  Route::get('imprimirMensual','Mesas\Importaciones\ImportadorController@imprimirMensual');
   Route::get('superuserActualizarTodosLosCierres','Mesas\Importaciones\ImportadorController@superuserActualizarTodosLosCierres');
 });
 
@@ -940,12 +934,13 @@ AUTOEXCLUSIÓN
 *************/
 Route::group(['prefix' => 'autoexclusion','middleware' => 'tiene_permiso:ver_seccion_ae_alta'], function () {
   Route::get('/','Autoexclusion\AutoexclusionController@index');
+  Route::get('/noticias','Autoexclusion\AutoexclusionController@indexNoticias');
   Route::delete('eliminarAE/{id_autoexcluido}','Autoexclusion\AutoexclusionController@eliminarAE');
   Route::post('agregarAE','Autoexclusion\AutoexclusionController@agregarAE');
   Route::post('subirArchivo','Autoexclusion\AutoexclusionController@subirArchivo');
   Route::get('cambiarEstadoAE/{id}/{id_estado}','Autoexclusion\AutoexclusionController@cambiarEstadoAE');
   Route::get('existeAutoexcluido/{dni}','Autoexclusion\AutoexclusionController@existeAutoexcluido');
-  Route::post('buscarAutoexcluidos','Autoexclusion\AutoexclusionController@buscarAutoexcluidos');
+  Route::get('buscarAutoexcluidos','Autoexclusion\AutoexclusionController@buscarAutoexcluidos');
   Route::get('buscarAutoexcluido/{id}','Autoexclusion\AutoexclusionController@buscarAutoexcluido');
   Route::get('mostrarArchivo/{id_importacion}/{tipo_archivo}','Autoexclusion\AutoexclusionController@mostrarArchivo');
   Route::get('mostrarFormulario/{id_formulario}','Autoexclusion\AutoexclusionController@mostrarFormulario');
@@ -954,7 +949,6 @@ Route::group(['prefix' => 'autoexclusion','middleware' => 'tiene_permiso:ver_sec
   Route::get('generarConstanciaReingreso/{id}','Autoexclusion\AutoexclusionController@generarConstanciaReingreso');
   Route::get('BDCSV','Autoexclusion\AutoexclusionController@BDCSV');
   Route::get('{dni?}','Autoexclusion\AutoexclusionController@index');
-  Route::post('destruirPapel','Autoexclusion\AutoexclusionController@destruirPapel');
 });
 
 Route::group(['prefix' => 'informesAutoexcluidos','middleware' => 'tiene_permiso:ver_seccion_ae_informes_listado'], function () {
@@ -974,4 +968,15 @@ Route::group(['prefix' => 'backoffice','middleware' => 'tiene_permiso:informes_m
   Route::get('/','BackOfficeController@index');
   Route::post('buscar','BackOfficeController@buscar');
   Route::post('descargar','BackOfficeController@descargar');
+});
+
+
+// Denuncias
+//['prefix' => 'denuncias','middleware' => 'tiene_permiso:ver_seccion_denuncias']
+Route::group(['prefix' => 'paginas'], function () {
+  Route::post('agregar','Denuncias\DenunciasController@agregar_pagina_nueva');
+  Route::get('list','Denuncias\DenunciasController@obtener_paginas');
+});
+Route::group(['prefix' => 'denuncias'], function () {
+  Route::get('/','Denuncias\DenunciasController@index');
 });
