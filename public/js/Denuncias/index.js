@@ -1,9 +1,20 @@
+var pag_denuncia_envio = undefined;
+var paginas = undefined;
+
 $(document).ready(function () {
   //INICIO
+  pag_denuncia_envio = new Map();
+  paginas = new Map();
   $("#btn-buscar").trigger("click");
 });
 
 //  funciones
+const convertir_fecha = function (fecha) {
+  [date, hour] = fecha.split(" ");
+  [yyyy, mm, dd] = date.split("-");
+  return yyyy + "/" + mm + "/" + dd + " " + hour;
+};
+
 function clickIndice(e, pageNumber, tam) {
   if (e != null) {
     e.preventDefault();
@@ -14,53 +25,43 @@ function clickIndice(e, pageNumber, tam) {
   $("#btn-buscar").trigger("click", [pageNumber, tam, columna, orden]);
 }
 
-function generarFilaTabla(d) {
-  const convertir_fecha = function (fecha) {
-    [date, hour] = fecha.split(" ");
-    [yyyy, mm, dd] = date.split("-");
-    return yyyy + "/" + mm + "/" + dd + " " + hour;
-  };
-
-  let fila = $("#cuerpoTabla .filaTabla")
+function generarFilaTabla(datos, tablabody) {
+  // agrega los datos en una fila, sirve para las tablas pequeñas y grandes
+  let fila = $(tablabody + " .filaTabla")
     .clone()
     .removeClass("filaTabla")
     .show();
 
-  fila.attr("data-id", d.id_pagina);
-  fila.find(".paginas-usuario").text(d.usuario).attr("title", d.usuario);
-  fila.find(".paginas-pagina").text(d.pagina).attr("title", d.pagina);
-  fila.find(".paginas-estado").text(d.descripcion).attr("title", d.descripcion);
+  fila.attr("data-id", datos.id_pagina);
+  fila
+    .find(".paginas-usuario")
+    .text(datos.usuario)
+    .attr("title", datos.usuario);
+  fila.find(".paginas-pagina").text(datos.pagina).attr("title", datos.pagina);
+  fila
+    .find(".paginas-estado")
+    .text(datos.descripcion)
+    .attr("title", datos.descripcion);
+  fila.find(".paginas-marcado .form-check-input").prop("checked", datos.check);
+  fila.find(".paginas-marcado .form-check-input").on("change", function () {
+    let isChecked = $(this).prop("checked");
+    let pagina= paginas.get(datos.id_pagina);
+    if(pagina){
+      pagina.check = isChecked;
+    }
+    else{
+      pagina= pag_denuncia_envio.get(datos.id_pagina);
+      pagina.check = isChecked;
+    }
+  });
   fila
     .find(".paginas-creado")
-    .text(convertir_fecha(d.created_at))
-    .attr("title", convertir_fecha(d.created_at));
+    .text(convertir_fecha(datos.created_at))
+    .attr("title", convertir_fecha(datos.created_at));
   fila.css("display", "flow-root");
   return fila;
 }
 
-function generarFilaTablaMini(d) {
-  const convertir_fecha = function (fecha) {
-    [date, hour] = fecha.split(" ");
-    [yyyy, mm, dd] = date.split("-");
-    return yyyy + "/" + mm + "/" + dd + " " + hour;
-  };
-
-  let fila = $("#body-paginas-no-agregadas .filaTabla")
-    .clone()
-    .removeClass("filaTabla")
-    .show();
-
-  fila.attr("data-id", d.id_pagina);
-  fila.find(".paginas-usuario").text(d.usuario).attr("title", d.usuario);
-  fila.find(".paginas-pagina").text(d.pagina).attr("title", d.pagina);
-  fila.find(".paginas-estado").text(d.descripcion).attr("title", d.descripcion);
-  fila
-    .find(".paginas-creado")
-    .text(convertir_fecha(d.created_at))
-    .attr("title", convertir_fecha(d.created_at));
-  fila.css("display", "flow-root");
-  return fila;
-}
 function verificar_url(url) {
   const regex =
     /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.com|instagram\.com)\/[a-zA-Z0-9(\.\?)?]/;
@@ -139,8 +140,12 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
 
       $("#cuerpoTabla tr").not(".filaTabla").remove();
       for (var i = 0; i < paginas_list.data.length; i++) {
+        paginas.set(paginas_list.data[i].id_pagina, {
+          ...paginas_list.data[i],
+          check: false,
+        });
         $("#table-paginas tbody").append(
-          generarFilaTabla(paginas_list.data[i])
+          generarFilaTabla(paginas_list.data[i], "#body-tabla-paginas")
         );
       }
     })
@@ -209,15 +214,55 @@ $("#btn-agregar-denuncia").click(function (e) {
   e.preventDefault();
   $("#mdl-agregar-den").modal("show");
 
-  const formData = {
-    usuario: $("#filtro-usuario").val(),
-    page_url: $("#filtro-url").val(),
-    //fecha_cierre_definitivo_h: isoDate($("#dtpFechaCierreDefinitivoH")),
-    page: 1,
-    page_size: 999999,
-  };
+  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  paginas.forEach((value, key) => {
+    $("#table-paginas-no-agregadas").append(
+      generarFilaTabla(value, "#body-paginas-no-agregadas")
+    );
+  });
+});
 
-  let respuesta = consultar_paginas(formData);
+$("#btn-agregar-pagina-denuncia").click(function (e) {
+  e.preventDefault();
+  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  //$("#body-paginas-agregadas tr").not(".filaTabla").remove();
+  paginas.forEach((value, key) => {
+    if (value.check) {
+      value.check = false;
+      pag_denuncia_envio.set(key, value);
+      paginas.delete(key);
+      $("#table-paginas-agregadas").append(
+        generarFilaTabla(value, "#body-paginas-agregadas")
+      );
+    } else {
+      $("#table-paginas-no-agregadas").append(
+        generarFilaTabla(value, "#body-paginas-no-agregadas")
+      );
+    }
+  });
+});
+
+$("#btn-quitar-pagina-denuncia").click(function (e) {
+  e.preventDefault();
+  //$("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  $("#body-paginas-agregadas tr").not(".filaTabla").remove();
+  pag_denuncia_envio.forEach((value, key) => {
+    if (value.check) {
+      value.check = false;
+      paginas.set(key, value);
+      pag_denuncia_envio.delete(key);
+      $("#table-paginas-no-agregadas").append(
+        generarFilaTabla(value, "#body-paginas-no-agregadas")
+      );
+    } else {
+      $("#table-paginas-agregadas").append(
+        generarFilaTabla(value, "#body-paginas-agregadas")
+      );
+    }
+  });
+});
+/**
+ *   let respuesta = consultar_paginas(formData);
   respuesta
     .success(function (resultados) {
       console.log(resultados);
@@ -226,11 +271,11 @@ $("#btn-agregar-denuncia").click(function (e) {
       $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
       for (var i = 0; i < paginas_list.data.length; i++) {
         $("#table-paginas-no-agregadas").append(
-          generarFilaTablaMini(paginas_list.data[i])
+          generarFilaTabla(paginas_list.data[i], "#body-paginas-no-agregadas")
         );
       }
     })
     .error(function (data) {
       console.log("Error:", data);
     });
-});
+ */

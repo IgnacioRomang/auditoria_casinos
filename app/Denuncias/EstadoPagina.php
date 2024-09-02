@@ -3,16 +3,14 @@ namespace App\Denuncias;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EstadoDenuncia extends Model
+class EstadoPagina extends Model
 {
   protected $connection = 'mysql';
-  protected $table = 'denuncia_estados';
-  protected $primaryKey = 'id_denuncia_estados';
-  protected $visible = array('id_denuncia_estados','descripcion');
+  protected $table = 'paginas_estados';
+  protected $primaryKey = 'id_estado';
+  protected $visible = array('id_estado','descripcion');
   public $timestamps = false;
-
   public function estados(){
-    return $this->hasMany('App\Denuncias\EstadoDenuncia','id_denuncia_estados','id_denuncia_estados');
+    return $this->hasMany('App\Denuncias\EstadoPagina','id_estado','id_estado');
   }
 }
-

@@ -173,7 +173,7 @@
                                                   class="fa fa-sort"></i></th>
                                       </tr>
                                   </thead>
-                                  <tbody id="cuerpoTabla" style="height: 350px;">
+                                  <tbody id="body-tabla-paginas" style="height: 350px;">
                                       <tr class="filaTabla" style="display: none">
                                           <td class="col-xs-2 paginas-usuario"></td>
                                           <td class="col-xs-2 paginas-pagina"></td>
@@ -313,11 +313,11 @@
                                       </tbody>
                                   </table>
                               </div>
-                              <div class="col-md-3">
+                              <div class="col-md-3 text-center">
                                   <div class="btn-group open">
-                                      <a class="btn btn-default" href="#"><i class="fa fa-arrow-left"></i>
+                                      <a id="btn-quitar-pagina-denuncia" class="btn btn-default" href="#"><i class="fa fa-arrow-left"></i>
                                           Quitar</a>
-                                      <a class="btn btn-success" href="#"> Agregar <i
+                                      <a id="btn-agregar-pagina-denuncia" class="btn btn-success" href="#"> Agregar <i
                                               class="fa fa-arrow-right"></i></a>
                                   </div>
                               </div>
@@ -326,21 +326,21 @@
                                   <table id="table-paginas-agregadas" class="table table-fixed tablesorter">
                                       <thead>
                                           <tr>
-                                              <th value="paginas-marcado" estado="">MARCADO<i
+                                              <th class="col-md-4" value="paginas-marcado" estado="">MARCADO<i
                                                       class="fa fa-sort"></i></th>
-                                              <th value="paginas-usuario" estado="">USUARIO<i
+                                              <th class="col-md-4" value="paginas-usuario" estado="">USUARIO<i
                                                       class="fa fa-sort"></i></th>
-                                              <th value="paginas-pagina" estado="">PAGINA<i class="fa fa-sort"></i>
+                                              <th class="col-md-4" value="paginas-pagina" estado="">PAGINA<i class="fa fa-sort"></i>
                                               </th>
                                           </tr>
                                       </thead>
                                       <tbody id="body-paginas-agregadas" style="height: 350px;">
                                           <tr class="filaTabla" style="display: none">
-                                              <td class="paginas-marcado">
+                                              <td class="col-md-4 paginas-marcado">
                                                   <input class="form-check-input" type="checkbox" id="flexCheckDefault">
                                               </td>
-                                              <td class="paginas-usuario"></td>
-                                              <td class="paginas-pagina"></td>
+                                              <td class="col-md-4 paginas-usuario"></td>
+                                              <td class="col-md-4 paginas-pagina"></td>
                                           </tr>
                                       </tbody>
                                   </table>
