@@ -82,6 +82,16 @@
               height: 350px;
               overflow-y: auto;
           }
+
+          .panel-h4 {
+              color: #222;
+              font-family: Roboto-Condensed;
+              text-transform: uppercase;
+              font-size: 14px;
+              margin: 2px 0px;
+              font-weight: 500;
+              line-height: 1.1;
+          }
       </style>
   @endsection
 
@@ -336,34 +346,31 @@
                       <div class="modal-body modal-Cuerpo">
                           <div class="row d-inline-block">
                               <div class="col-md-4">
-                                  <div class="panel panel-default">
-                                      <div class="panel-heading">
-                                          <h4>LISTADO DE PAGINAS NO AGREGADAS A LA DENUNCIA </h4>
-                                      </div>
-                                      <table id="table-paginas-no-agregadas" class="table table-fixed">
-                                          <thead>
-                                              <tr>
-                                                  <th class="col-md-4" value="paginas-marcado" estado="">MARCADO
-                                                  </th>
-                                                  <th class="col-md-4" value="paginas-usuario" estado="">USUARIO
-                                                  </th>
-                                                  <th class="col-md-4" value="paginas-pagina" estado="">PAGINA</th>
-                                              </tr>
-                                          </thead>
-                                          <tbody id="body-paginas-no-agregadas" class="tabla-overflow">
-                                              <tr class="filaTabla" style="display: none">
-                                                  <td class="col-md-4 align-middle paginas-marcado">
-                                                      <input class="form-check-input big-checkbox" type="checkbox"
-                                                          id="flexCheckDefault">
-                                                      <span></span>
-                                                  </td>
-                                                  <td class="col-md-4 paginas-usuario"></td>
-                                                  <td class="col-md-4 paginas-pagina"></td>
-                                              </tr>
-                                          </tbody>
-                                      </table>
+                                  <div>
+                                      <h4 class="panel-h4">LISTADO DE PAGINAS NO AGREGADAS A LA DENUNCIA </h4>
                                   </div>
-
+                                  <table id="table-paginas-no-agregadas" class="table table-fixed">
+                                      <thead>
+                                          <tr>
+                                              <th class="col-md-4" value="paginas-marcado" estado="">MARCADO
+                                              </th>
+                                              <th class="col-md-4" value="paginas-usuario" estado="">USUARIO
+                                              </th>
+                                              <th class="col-md-4" value="paginas-pagina" estado="">PAGINA</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody id="body-paginas-no-agregadas" class="tabla-overflow">
+                                          <tr class="filaTabla" style="display: none">
+                                              <td class="col-md-4 align-middle paginas-marcado">
+                                                  <input class="form-check-input big-checkbox" type="checkbox"
+                                                      id="flexCheckDefault">
+                                                  <span></span>
+                                              </td>
+                                              <td class="col-md-4 paginas-usuario"></td>
+                                              <td class="col-md-4 paginas-pagina"></td>
+                                          </tr>
+                                      </tbody>
+                                  </table>
                               </div>
                               <div class="col-md-3 text-center">
                                   <div class="btn-group open">
@@ -378,35 +385,32 @@
                               </div>
                               <span></span>
                               <div class="col-md-4">
-                                  <div class="panel panel-default">
-                                      <div class="panel-heading">
-                                          <h4>LISTADO DE PAGINAS AGREGADAS A LA DENUNCIA </h4>
-                                      </div>
-                                      <table id="table-paginas-agregadas" class="table table-fixed tablesorter">
-                                          <thead>
-                                              <tr>
-                                                  <th class="col-md-4" value="paginas-marcado" estado="">MARCADO<i
-                                                          class="fa fa-sort"></i></th>
-                                                  <th class="col-md-4" value="paginas-usuario" estado="">USUARIO<i
-                                                          class="fa fa-sort"></i></th>
-                                                  <th class="col-md-4" value="paginas-pagina" estado="">PAGINA<i
-                                                          class="fa fa-sort"></i>
-                                                  </th>
-                                              </tr>
-                                          </thead>
-                                          <tbody id="body-paginas-agregadas" class="tabla-overflow">
-                                              <tr class="filaTabla" style="display: none">
-                                                  <td class="col-md-4 align-middle paginas-marcado">
-                                                      <input class="form-check-input big-checkbox" type="checkbox"
-                                                          id="flexCheckDefault">
-                                                  </td>
-                                                  <td class="col-md-4 paginas-usuario"></td>
-                                                  <td class="col-md-4 paginas-pagina"></td>
-                                              </tr>
-                                          </tbody>
-                                      </table>
+                                  <div>
+                                      <h4 class="panel-h4">LISTADO DE PAGINAS AGREGADAS A LA DENUNCIA </h4>
                                   </div>
-
+                                  <table id="table-paginas-agregadas" class="table table-fixed tablesorter">
+                                      <thead>
+                                          <tr>
+                                              <th class="col-md-4" value="paginas-marcado" estado="">MARCADO<i
+                                                      class="fa fa-sort"></i></th>
+                                              <th class="col-md-4" value="paginas-usuario" estado="">USUARIO<i
+                                                      class="fa fa-sort"></i></th>
+                                              <th class="col-md-4" value="paginas-pagina" estado="">PAGINA<i
+                                                      class="fa fa-sort"></i>
+                                              </th>
+                                          </tr>
+                                      </thead>
+                                      <tbody id="body-paginas-agregadas" class="tabla-overflow">
+                                          <tr class="filaTabla" style="display: none">
+                                              <td class="col-md-4 align-middle paginas-marcado">
+                                                  <input class="form-check-input big-checkbox" type="checkbox"
+                                                      id="flexCheckDefault">
+                                              </td>
+                                              <td class="col-md-4 paginas-usuario"></td>
+                                              <td class="col-md-4 paginas-pagina"></td>
+                                          </tr>
+                                      </tbody>
+                                  </table>
                               </div>
                           </div>
                       </div>
