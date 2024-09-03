@@ -19,6 +19,6 @@ class Pagina extends Model
   }
 
   public function denuncia(){
-    return $this->belongsTo('App\Denuncias\Denuncia','id_denuncia','id_denuncia');
+    return $this->belongsToMany('App\Denuncias\Denuncia','pagina_en_denunciada','id_denuncia','id_denuncia');
   }
 }

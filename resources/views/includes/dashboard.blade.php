@@ -643,7 +643,6 @@ $tarjeta_css = $tarjeta? "background-image: url($tarjeta);height: 13vh;backgroun
                 <h3>ERROR</h3>
                 <p>No es posible realizar la acción</p>
             </div>
-
         </div>
 
         <!-- Modal ayuda -->

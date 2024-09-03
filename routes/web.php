@@ -974,9 +974,12 @@ Route::group(['prefix' => 'backoffice','middleware' => 'tiene_permiso:informes_m
 // Denuncias
 //['prefix' => 'denuncias','middleware' => 'tiene_permiso:ver_seccion_denuncias']
 Route::group(['prefix' => 'paginas'], function () {
-  Route::post('agregar','Denuncias\DenunciasController@agregar_pagina_nueva');
-  Route::get('list','Denuncias\DenunciasController@obtener_paginas');
+  Route::post('agregar','Denuncias\PaginasController@agregar_pagina_nueva');
+  Route::get('list','Denuncias\PaginasController@obtener_paginas');
+  Route::post('verificar','Denuncias\PaginasController@existe_pagina');
 });
+
 Route::group(['prefix' => 'denuncias'], function () {
   Route::get('/','Denuncias\DenunciasController@index');
+  Route::post('/agregar','Denuncias\DenunciasController@agregar_denuncia_nueva');
 });

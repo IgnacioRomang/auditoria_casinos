@@ -19,6 +19,10 @@
 
 
       <style>
+          .small-text {
+              font-size: 12px;
+          }
+
           .page {
               display: none;
           }
@@ -58,8 +62,25 @@
           }
 
           input[required],
+
           select[required] {
               background: #f0f6ff
+          }
+
+          .big-checkbox {
+              width: 15px;
+              height: 15px;
+          }
+
+          .align-middle {
+              vertical-align: middle;
+              text-align: center;
+          }
+
+          .tabla-overflow {
+              display: block;
+              height: 350px;
+              overflow-y: auto;
           }
       </style>
   @endsection
@@ -73,6 +94,7 @@
                       <a href="" id="btn-agregar-pagina" style="text-decoration: none;">
                           <div class="panel panel-default panelBotonNuevo">
                               <center>
+                                  <i class="w-50 h-50 fa fa-file-text-o" aria-hidden="true"></i>
                                   <img class="imgNuevo" src="/img/logos/relevamientos_white.png">
                               </center>
                               <div class="backgroundNuevo"></div>
@@ -151,9 +173,10 @@
                   </div>
               </div>
 
-              <!-- TABLA DE PAGINAS-->
+              <!-- TABLAS-->
               <div class="row">
-                  <div class="col-md-12">
+                  <!-- TABLA PAGINAS-->
+                  <div class="col-md-6">
                       <div class="panel panel-default">
                           <div class="panel-heading">
                               <h4>LISTADO DE PAGINAS</h4>
@@ -162,59 +185,78 @@
                               <table id="table-paginas" class="table table-fixed tablesorter">
                                   <thead>
                                       <tr>
-                                          <th class="col-xs-2" value="paginas-usuario" estado="">USUARIO<i
+                                          <th class="col-xs-3" value="paginas-usuario" estado="">USUARIO<i
                                                   class="fa fa-sort"></i></th>
                                           <th class="col-xs-2" value="paginas-pagina" estado="">PAGINA<i
                                                   class="fa fa-sort"></i>
                                           </th>
-                                          <th class="col-xs-2" value="paginas-estado" estado="">ESTADO<i
+                                          <th class="col-xs-3" value="paginas-estado" estado="">ESTADO<i
                                                   class="fa fa-sort"></i></th>
-                                          <th class="col-xs-2" value="paginas-creado" estado="">F. AGREGADO<i
+                                          <th class="col-xs-4" value="paginas-creado" estado="">F. AGREGADO<i
                                                   class="fa fa-sort"></i></th>
                                       </tr>
                                   </thead>
                                   <tbody id="body-tabla-paginas" style="height: 350px;">
                                       <tr class="filaTabla" style="display: none">
+                                          <td class="col-xs-3 paginas-usuario"></td>
+                                          <td class="col-xs-2 paginas-pagina"></td>
+                                          <td class="col-xs-3 paginas-estado"></td>
+                                          <td class="col-xs-4 paginas-creado"></td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                              <div id="herramientasPaginacion" class="row zonaPaginacion"></div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- TABLA DENUNCIAS-->
+                  <div class="col-md-6">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="pull-left">LISTADO DE DENUNCIAS </h4>
+                              <p class="lead small-text pull-right">El estado de las denuncias no se actualiza
+                                  automaitcamente.</p>
+                          </div>
+                          <div class="panel-body">
+                              <table id="table-denuncia" class="table table-fixed tablesorter">
+                                  <thead>
+                                      <tr>
+                                          <th class="col-xs-2" value="paginas-usuario" estado="">NUMERO<i
+                                                  class="fa fa-sort"></i></th>
+                                          <th class="col-xs-2" value="paginas-pagina" estado="">PAGINAS<i
+                                                  class="fa fa-sort"></i>
+                                          </th>
+                                          <th class="col-xs-2" value="paginas-estado" estado="">ESTADO<i
+                                                  class="fa fa-sort"></i></th>
+                                          <th class="col-xs-3" value="paginas-creado" estado="">F. CREACIÓN<i
+                                                  class="fa fa-sort"></i></th>
+                                          <th class="col-xs-2" value="paginas-creado" estado="">ACCIONES</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="body-tabla-denuncia" style="height: 350px;">
+                                      <tr class="filaTabla" style="display: none">
                                           <td class="col-xs-2 paginas-usuario"></td>
                                           <td class="col-xs-2 paginas-pagina"></td>
                                           <td class="col-xs-2 paginas-estado"></td>
-                                          <td class="col-xs-2 paginas-creado"></td>
-                                          <td class="col-xs-3 acciones">
-                                              <button id="btnVerMas" class="btn btn-info info" type="button"
+                                          <td class="col-xs-3 paginas-creado"></td>
+                                          <td class="col-xs-2 acciones">
+                                              <button id="btn-ver-as" class="btn btn-info info" type="button"
                                                   value="" title="VER MÁS" data-toggle="tooltip"
                                                   data-placement="top" data-delay="{'show':'300', 'hide':'100'}">
                                                   <i class="fa fa-fw fa-search-plus"></i>
                                               </button>
-                                              <a tabindex="0" id="btnSubirArchivos" class="btn btn-info info"
-                                                  role="button" value="" title="SUBIR ARCHIVOS"
-                                                  data-toggle="popover" data-html="true" data-trigger="focus"
-                                                  data-content="">
-                                                  <i class="fa fa-fw fa-folder-open"></i>
-                                              </a>
                                               <button id="btnGenerarSolicitudAutoexclusion" class="btn btn-info info"
-                                                  type="button" value="" title="GENERAR SOLICITUD AE"
-                                                  data-toggle="tooltip" data-placement="top"
-                                                  data-delay="{'show':'300', 'hide':'100'}">
-                                                  <i class="far fa-fw fa-file-alt"></i>
-                                              </button>
-                                              <button id="btnGenerarConstanciaReingreso" class="btn btn-info imprimir"
-                                                  type="button" value="" title="GENERAR CONSTANCIA DE REINGRESO"
-                                                  data-toggle="tooltip" data-placement="top"
-                                                  data-delay="{'show':'300', 'hide':'100'}">
-                                                  <i class="fa fa-fw fa-print"></i>
-                                              </button>
-                                              <button id="btnGenerarSolicitudFinalizacion" class="btn btn-info imprimir"
-                                                  type="button" value="" title="GENERAR SOLICITUD DE FINALIZACION"
-                                                  data-toggle="tooltip" data-placement="top"
-                                                  data-delay="{'show':'300', 'hide':'100'}">
-                                                  <i class="fa fa-fw fa-print"></i>
+                                                  type="button" value="" title="VERIFICAR" data-toggle="tooltip"
+                                                  data-placement="top" data-delay="{'show':'300', 'hide':'100'}">
+                                                  <i class="fa fa-eye" aria-hidden="true"></i>
                                               </button>
                                               <span></span>
                                           </td>
                                       </tr>
                                   </tbody>
                               </table>
-                              <div id="herramientasPaginacion" class="row zonaPaginacion"></div>
+                              <div id="herramientasPaginacion2" class="row zonaPaginacion"></div>
                           </div>
                       </div>
                   </div>
@@ -249,15 +291,16 @@
                                               <h5>URL / LINK</h5>
                                               <input id="ipt-url" type="text" class="form-control" placeholder=""
                                                   value="" required alpha data-size="100">
-                                              <small class="form-text text-muted">Introduce la URL o el enlace. Enter para
+                                              <small id="url-helper-text" class="form-text text-muted">Introduce la URL o
+                                                  el enlace. Enter para
                                                   visualizar</small>
                                           </div>
                                           <div id="div-prev" class="col-lg-12 hide">
                                               <h1 class="mb-4">Vista Previa</h1>
                                               <p class="lead">La pagina un perfil.</p>
                                               <div class="embed-responsive embed-responsive-16by9">
-                                                  <iframe id="ifm" src="/denuncias" class="embed-responsive-item"
-                                                      title="YouTube video" allowfullscreen></iframe>
+                                                  <img id="ifm" src="/denuncias" class="embed-responsive-item"
+                                                      title="YouTube video" allowfullscreen></img>
                                               </div>
                                           </div>
                                       </div>
@@ -281,7 +324,7 @@
       <!-- MODAL AGREGAR DENUNCIA-->
       <div class="modal fade" id="mdl-agregar-den" tabindex="-1" role="dialog" aria-hidden="true">
           <div class="modal-dialog modal-lg">
-              <div class="modal-content">
+              <div class="modal-content align-middle">
                   <div class="modal-header" style="font-family: Roboto-Black; background-color: #6dc7be; color: #fff">
                       <button type="button" class="close" data-dismiss="modal"><i class="fa fa-times"></i></button>
                       <button id="btn-minimizar" type="button" class="close" data-toggle="collapse"
@@ -291,64 +334,84 @@
                   </div>
                   <div id="colapsado" class="collapse in">
                       <div class="modal-body modal-Cuerpo">
-                          <div class="row">
+                          <div class="row d-inline-block">
                               <div class="col-md-4">
-                                  <table id="table-paginas-no-agregadas" class="table table-fixed">
-                                      <thead>
-                                          <tr>
-                                              <th class="col-md-4" value="paginas-marcado" estado="">MARCADO</th>
-                                              <th class="col-md-4" value="paginas-usuario" estado="">USUARIO</th>
-                                              <th class="col-md-4" value="paginas-pagina" estado="">PAGINA</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody id="body-paginas-no-agregadas" style="height: 350px;">
-                                          <tr class="filaTabla" style="display: none">
-                                              <td class="col-md-4 paginas-marcado align-middle" style="text-align: center;">
-                                                  <input class="form-check-input" type="checkbox" id="flexCheckDefault">
-                                                  <span></span>
-                                              </td>
-                                              <td class="col-md-4 paginas-usuario"></td>
-                                              <td class="col-md-4 paginas-pagina"></td>
-                                          </tr>
-                                      </tbody>
-                                  </table>
+                                  <div class="panel panel-default">
+                                      <div class="panel-heading">
+                                          <h4>LISTADO DE PAGINAS NO AGREGADAS A LA DENUNCIA </h4>
+                                      </div>
+                                      <table id="table-paginas-no-agregadas" class="table table-fixed">
+                                          <thead>
+                                              <tr>
+                                                  <th class="col-md-4" value="paginas-marcado" estado="">MARCADO
+                                                  </th>
+                                                  <th class="col-md-4" value="paginas-usuario" estado="">USUARIO
+                                                  </th>
+                                                  <th class="col-md-4" value="paginas-pagina" estado="">PAGINA</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody id="body-paginas-no-agregadas" class="tabla-overflow">
+                                              <tr class="filaTabla" style="display: none">
+                                                  <td class="col-md-4 align-middle paginas-marcado">
+                                                      <input class="form-check-input big-checkbox" type="checkbox"
+                                                          id="flexCheckDefault">
+                                                      <span></span>
+                                                  </td>
+                                                  <td class="col-md-4 paginas-usuario"></td>
+                                                  <td class="col-md-4 paginas-pagina"></td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+
                               </div>
                               <div class="col-md-3 text-center">
                                   <div class="btn-group open">
-                                      <a id="btn-quitar-pagina-denuncia" class="btn btn-default" href="#"><i class="fa fa-arrow-left"></i>
+                                      <a id="btn-quitar-pagina-denuncia" class="btn btn-default" href="#"><i
+                                              class="fa fa-arrow-left"></i>
                                           Quitar</a>
-                                      <a id="btn-agregar-pagina-denuncia" class="btn btn-success" href="#"> Agregar <i
-                                              class="fa fa-arrow-right"></i></a>
+                                      <a id="btn-agregar-pagina-denuncia" class="btn btn-success" href="#"> Agregar
+                                          <i class="fa fa-arrow-right"></i></a>
                                   </div>
+                                  <p class="lead"> Selecciona las páginas marcando los checkboxes y presiona 'Agregar'
+                                      para añadirlas o 'Quitar' para eliminarlas.</p>
                               </div>
                               <span></span>
                               <div class="col-md-4">
-                                  <table id="table-paginas-agregadas" class="table table-fixed tablesorter">
-                                      <thead>
-                                          <tr>
-                                              <th class="col-md-4" value="paginas-marcado" estado="">MARCADO<i
-                                                      class="fa fa-sort"></i></th>
-                                              <th class="col-md-4" value="paginas-usuario" estado="">USUARIO<i
-                                                      class="fa fa-sort"></i></th>
-                                              <th class="col-md-4" value="paginas-pagina" estado="">PAGINA<i class="fa fa-sort"></i>
-                                              </th>
-                                          </tr>
-                                      </thead>
-                                      <tbody id="body-paginas-agregadas" style="height: 350px;">
-                                          <tr class="filaTabla" style="display: none">
-                                              <td class="col-md-4 paginas-marcado">
-                                                  <input class="form-check-input" type="checkbox" id="flexCheckDefault">
-                                              </td>
-                                              <td class="col-md-4 paginas-usuario"></td>
-                                              <td class="col-md-4 paginas-pagina"></td>
-                                          </tr>
-                                      </tbody>
-                                  </table>
+                                  <div class="panel panel-default">
+                                      <div class="panel-heading">
+                                          <h4>LISTADO DE PAGINAS AGREGADAS A LA DENUNCIA </h4>
+                                      </div>
+                                      <table id="table-paginas-agregadas" class="table table-fixed tablesorter">
+                                          <thead>
+                                              <tr>
+                                                  <th class="col-md-4" value="paginas-marcado" estado="">MARCADO<i
+                                                          class="fa fa-sort"></i></th>
+                                                  <th class="col-md-4" value="paginas-usuario" estado="">USUARIO<i
+                                                          class="fa fa-sort"></i></th>
+                                                  <th class="col-md-4" value="paginas-pagina" estado="">PAGINA<i
+                                                          class="fa fa-sort"></i>
+                                                  </th>
+                                              </tr>
+                                          </thead>
+                                          <tbody id="body-paginas-agregadas" class="tabla-overflow">
+                                              <tr class="filaTabla" style="display: none">
+                                                  <td class="col-md-4 align-middle paginas-marcado">
+                                                      <input class="form-check-input big-checkbox" type="checkbox"
+                                                          id="flexCheckDefault">
+                                                  </td>
+                                                  <td class="col-md-4 paginas-usuario"></td>
+                                                  <td class="col-md-4 paginas-pagina"></td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+
                               </div>
                           </div>
                       </div>
                       <div class="modal-footer">
-                          <button type="button" class="btn btn-successAceptar" id="btn-guardar-page"
+                          <button type="button" class="btn btn-successAceptar" id="btn-guardar-den"
                               value="nuevo">ENVIAR</button>
                           <button type="button" class="btn btn-default" id="btn-cancelar" data-dismiss="modal"
                               aria-label="Close">CANCELAR</button>

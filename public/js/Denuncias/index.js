@@ -12,7 +12,7 @@ $(document).ready(function () {
 const convertir_fecha = function (fecha) {
   [date, hour] = fecha.split(" ");
   [yyyy, mm, dd] = date.split("-");
-  return yyyy + "/" + mm + "/" + dd + " " + hour;
+  return yyyy + "/" + mm + "/" + dd ;
 };
 
 function clickIndice(e, pageNumber, tam) {
@@ -31,7 +31,6 @@ function generarFilaTabla(datos, tablabody) {
     .clone()
     .removeClass("filaTabla")
     .show();
-
   fila.attr("data-id", datos.id_pagina);
   fila
     .find(".paginas-usuario")
@@ -42,15 +41,14 @@ function generarFilaTabla(datos, tablabody) {
     .find(".paginas-estado")
     .text(datos.descripcion)
     .attr("title", datos.descripcion);
-  fila.find(".paginas-marcado .form-check-input").prop("checked", datos.check);
+  fila.find(".paginas-marcado .form-check-input").prop("checked", datos.check)
   fila.find(".paginas-marcado .form-check-input").on("change", function () {
     let isChecked = $(this).prop("checked");
-    let pagina= paginas.get(datos.id_pagina);
-    if(pagina){
+    let pagina = paginas.get(datos.id_pagina);
+    if (pagina) {
       pagina.check = isChecked;
-    }
-    else{
-      pagina= pag_denuncia_envio.get(datos.id_pagina);
+    } else {
+      pagina = pag_denuncia_envio.get(datos.id_pagina);
       pagina.check = isChecked;
     }
   });
@@ -138,7 +136,7 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
         clickIndice
       );
 
-      $("#cuerpoTabla tr").not(".filaTabla").remove();
+      $("#body-tabla-paginas tr").not(".filaTabla").remove();
       for (var i = 0; i < paginas_list.data.length; i++) {
         paginas.set(paginas_list.data[i].id_pagina, {
           ...paginas_list.data[i],
@@ -154,11 +152,39 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
     });
 });
 
-$("#ipt-url").on("change", function () {
-  var url = $("#ipt-url").val();
+$("#ipt-url").on("input", function () {
+  let url = $("#ipt-url").val();
   if (verificar_url(url)) {
     if (url.length > 0) {
-      $("#ifm").attr("src", url);
+      let formData = new FormData();
+      formData.append("pag_url", url);
+      $.ajaxSetup({
+        headers: {
+          "X-CSRF-TOKEN": $('meta[name="_token"]').attr("content"),
+        },
+      });
+      $.ajax({
+        type: "POST",
+        url: "/paginas/verificar",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function (resultados) {
+          console.log("Exito:", resultados);
+          let pags = resultados.paginas
+          if(pags.length>0){
+            $("#mensajeError h3").text("ERROR");
+            $("#mensajeError p").text("La pagina ya existe, verifique si fue denunciada o no");
+            //$("#mdl-agregar-pag").modal("hide");
+            $("#mensajeError").show();
+          }
+        },
+        error: function (data) {
+          console.log("Error:", data);
+        },
+      });
+      $("#ifm").attr("src", "https://api.thumbalizr.com/api/v1/embed/EMBED_API_KEY/TOKEN/?url="+url);
       $("#div-prev").removeClass("hide");
     } else {
       $("#div-prev").addClass("hide");
@@ -169,9 +195,9 @@ $("#ipt-url").on("change", function () {
 });
 
 $("#btn-guardar-page").on("click", function () {
-  var formData = new FormData();
-  var usuario = $("#ipt-usuario").val();
-  var url_pagina = $("#ipt-url").val();
+  let formData = new FormData();
+  let usuario = $("#ipt-usuario").val();
+  let url_pagina = $("#ipt-url").val();
   if (usuario.length > 0) {
     formData.append("usuario", usuario);
   }
@@ -196,6 +222,7 @@ $("#btn-guardar-page").on("click", function () {
       $("#mensajeExito h3").text("ÉXITO");
       $("#mensajeExito p").text("La Pagina se cargo correctamente");
       $("#mdl-agregar-pag").modal("hide");
+      $("#btn-buscar").trigger("click");
       $("#mensajeExito").show();
     },
     error: function (data) {
@@ -261,6 +288,45 @@ $("#btn-quitar-pagina-denuncia").click(function (e) {
     }
   });
 });
+
+$("#btn-guardar-den").click(function (e) {
+  e.preventDefault();
+  let paginas_ids =pag_denuncia_envio.keys();
+  let formData = new FormData();
+  if (paginas_ids.length > 0) {
+    formData.append("paginas_id", paginas_ids);
+  }
+  $.ajaxSetup({
+    headers: {
+      "X-CSRF-TOKEN": $('meta[name="_token"]').attr("content"),
+    },
+  });
+  $.ajax({
+    type: "POST",
+    url: "/denuncias/agregar",
+    data: formData,
+    contentType: false,
+    processData: false,
+    dataType: "json",
+    success: function (resultados) {
+      console.log("Exito:", resultados);
+      $("#mensajeExito h3").text("ÉXITO");
+      $("#mensajeExito p").text("La Denuncia se cargo correctamente");
+      $("#mdl-agregar-den").modal("hide");
+      $("#btn-buscar").trigger("click");
+      $("#mensajeExito").show();
+    },
+    error: function (data) {
+      console.log("Error:", data);
+      mostrarErrorValidacion(
+        $("#mdl-agregar-den"),
+        "Verifique que la denuncia tenga al menos una pagina",
+        true
+      );
+    },
+  });
+  $("#mdl-agregar-pag").modal("show");
+})
 /**
  *   let respuesta = consultar_paginas(formData);
   respuesta

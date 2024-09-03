@@ -19,11 +19,10 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-use App\Denuncias\Denuncia;
 use App\Denuncias\Pagina;
-use App\Denuncias\EstadoDenuncia;
+use App\Denuncias\EstadoPagina;
 
-class DenunciasController extends Controller
+class PaginasController extends Controller
 {
     private static $atributos = [];
 
@@ -42,28 +41,24 @@ class DenunciasController extends Controller
     // End Singleton
 
     // Vistas
-    public function index(Request $req){
-        // TODO : quitar denuncias , lo deje como ejemplo 
-        $denuncias = Pagina::all();
-        return view('Denuncias.index', ['paginas' => $denuncias]);
-      }
-
-    // Metodos
-
-    public function agregar_denuncia_nueva(Request $req){
+    // Por el momento las paginas no tienen vistas asociadas ya que dependen (se crean, y se asignan) de una denuncia
+    
+    // Metodos para rutas
+    public function agregar_pagina_nueva(Request $req){
       $validator = Validator::make($req->all(), [
-        'paginas_id' => 'required|array'], array(), self::$atributos);
+        'usuario' => 'required',
+        'pag_url' => 'required'], array(), self::$atributos);
 
       if ($validator->fails()) {
         return response()->json($validator->errors(), Response::HTTP_BAD_REQUEST);
       }
-      //$paginas = PaginasController::getInstancia()->obtener_paginas_by_id($req->paginas_id);
-      $nueva_denuncia = $this->crea_denuncia($req->paginas_id);
-      $nueva_denuncia->save();
-      return response()->json(['denuncia' => $nueva_denuncia], Response::HTTP_OK);
+      $nueva_pagina = $this->crea_pagina($req);
+      $nueva_pagina->save();
+      return response()->json(['pagina' => $nueva_pagina], Response::HTTP_OK);
     }
 
-    public function obtener_denuncias(Request $req){
+
+    public function obtener_paginas(Request $req){
       $reglas = Array();
       $filters = [
         'usuario' => 'paginas.usuario',
@@ -122,14 +117,33 @@ class DenunciasController extends Controller
       $resultados = DB::table('paginas')->where('pag_url', '=', $req->pag_url)->get();
       return response()->json(['paginas' => $resultados]);
     }
-
-    // Utiles
-
-    private function crea_denuncia($paginas){
-      $denuncia = new Denuncia();
-      $estado = EstadoDenuncia::find(1);
-      $denuncia->estado()->associate($estado);
-      $denuncia->paginas()->sync($paginas);
-      return $denuncia;
+    // Metodos internos 
+    public function obtener_paginas_by_id($list){
+      $paginas = Pagina::whereIn('id_paginas', $list->paginas_id)->get();
+      return $paginas;
     }
+    // Utiles
+    private function crea_pagina($req){
+      $nueva_pagina = new Pagina();
+      $nueva_pagina->usuario = $req->input('usuario');
+      $nueva_pagina->pagina = $this->get_pagina($req->input('pag_url'));
+      $nueva_pagina->pag_url = $req->input('pag_url');
+      $estado = EstadoPagina::find(1);
+      $nueva_pagina->estado()->associate($estado);
+      return $nueva_pagina;
+    }
+    private function get_pagina($url){
+      $parsedUrl = parse_url($url, PHP_URL_HOST);
+      if (strpos($parsedUrl, 'facebook.com') !== false) {
+          return 'Facebook';
+      } elseif (strpos($parsedUrl, 'instagram.com') !== false) {
+          return 'Instagram';
+      } elseif (strpos($parsedUrl, 'twitter.com') !== false) {
+          return 'Twitter';
+      } else {
+          return 'Otra plataforma';
+      }
+      return $url;
+    }
+
 }
