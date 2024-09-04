@@ -5,7 +5,9 @@ $(document).ready(function () {
   //INICIO
   pag_denuncia_envio = new Map();
   paginas = new Map();
-  $("#btn-buscar").trigger("click");
+
+  $("#btn-buscar-pagina").trigger("click");
+  $("#btn-buscar-denuncia").trigger("click");
 });
 
 //  funciones
@@ -15,17 +17,31 @@ const convertir_fecha = function (fecha) {
   return yyyy + "/" + mm + "/" + dd ;
 };
 
-function clickIndice(e, pageNumber, tam) {
+// SI SON DOS METODOS IGUALES PERO COMO generarIndices NO SE DONDE SE ENCUENTRA
+// COMO PARA ADAPATARLO A UN METODO GENERALIZADO QUE RECIBA A QUE TABLA Y BOTON Y HERRAMINETA DE PAG ESPESIFICOS
+// ME VEO OBLIGADO A HACER DOS METODOS
+function clickIndicePagina(e, pageNumber, tam) {
   if (e != null) {
     e.preventDefault();
   }
-  var tam = tam != null ? tam : $("#herramientasPaginacion").getPageSize();
-  var columna = $("#table-denuncias .activa").attr("value");
-  var orden = $("#table-denuncias .activa").attr("estado");
-  $("#btn-buscar").trigger("click", [pageNumber, tam, columna, orden]);
+  var tam = tam != null ? tam : $("#herramientasPaginacion-paginas").getPageSize();
+  var columna = $("#table-paginas .activa").attr("value");
+  var orden = $("#table-paginas .activa").attr("estado");
+  $("#btn-buscar-pagina").trigger("click", [pageNumber, tam, columna, orden]);
 }
 
-function generarFilaTabla(datos, tablabody) {
+function clickIndiceDenuncia(e, pageNumber, tam, tabla) {
+  if (e != null) {
+    e.preventDefault();
+  }
+  var tam = tam != null ? tam : $("#herramientasPaginacion-denuncia").getPageSize();
+  var columna = $("#table-denuncia .activa").attr("value");
+  var orden = $("#table-denuncia .activa").attr("estado");
+  $("#btn-buscar-denuncia").trigger("click", [pageNumber, tam, columna, orden]);
+}
+
+
+function generarFilaTablaPaginas(datos, tablabody) {
   // agrega los datos en una fila, sirve para las tablas pequeñas y grandes
   let fila = $(tablabody + " .filaTabla")
     .clone()
@@ -60,6 +76,31 @@ function generarFilaTabla(datos, tablabody) {
   return fila;
 }
 
+function generarFilaTablaDenuncias(datos, tablabody) {
+  // agrega los datos en una fila, sirve para las tablas pequeñas y grandes
+  let fila = $(tablabody + " .filaTabla")
+    .clone()
+    .removeClass("filaTabla")
+    .show();
+  fila.attr("data-id", datos.id_denuncia);
+
+  fila
+    .find(".denuncia-id")
+    .text(datos.id_denuncia)
+    .attr("title", datos.id_denuncia);
+  fila.find(".denuncia-pagina").text(datos.paginas_count).attr("title", datos.paginas_count);
+  fila
+    .find(".denuncia-estado")
+    .text(datos.estado_descripcion)
+    .attr("title", datos.estado_descripcion);
+  fila
+    .find(".denuncia-creado")
+    .text(convertir_fecha(datos.created_at))
+    .attr("title", convertir_fecha(datos.created_at));
+  fila.css("display", "flow-root");
+  return fila;
+}
+
 function verificar_url(url) {
   const regex =
     /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.com|instagram\.com)\/[a-zA-Z0-9(\.\?)?]/;
@@ -75,6 +116,20 @@ function consultar_paginas(formData) {
   return $.ajax({
     type: "GET",
     url: "/paginas/list",
+    data: formData,
+    dataType: "json",
+  });
+}
+
+function consultar_denuncias(formData) {
+  $.ajaxSetup({
+    headers: {
+      "X-CSRF-TOKEN": $('meta[name="_token"]').attr("content"),
+    },
+  });
+  return $.ajax({
+    type: "GET",
+    url: "/denuncias/list",
     data: formData,
     dataType: "json",
   });
@@ -95,11 +150,22 @@ $("#btn-agregar-pagina").click(function (e) {
   $("#mdl-agregar-pag").modal("show");
 });
 
-$("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
+$("#btn-agregar-denuncia").click(function (e) {
   e.preventDefault();
-  const deflt_size = isNaN($("#herramientasPaginacion").getPageSize())
-    ? 10
-    : $("#herramientasPaginacion").getPageSize();
+  $("#mdl-agregar-den").modal("show");
+  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  paginas.forEach((value, key) => {
+    $("#table-paginas-no-agregadas").append(
+      generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
+    );
+  });
+});
+
+$("#btn-buscar-pagina").click(function (e, pagina, page_size, columna, orden) {
+  e.preventDefault();
+  const deflt_size = isNaN($("#herramientasPaginacion-paginas").getPageSize())
+  ? 10
+    : $("#herramientasPaginacion-paginas").getPageSize();
   const sort_by =
     columna != null
       ? { columna: columna, orden: orden }
@@ -113,7 +179,7 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
     page_url: $("#filtro-url").val(),
     //fecha_cierre_definitivo_h: isoDate($("#dtpFechaCierreDefinitivoH")),
     page:
-      pagina != null ? pagina : $("#herramientasPaginacion").getCurrentPage(),
+      pagina != null ? pagina : $("#herramientasPaginacion-paginas").getCurrentPage(),
     sort_by: sort_by,
     page_size: page_size == null || isNaN(page_size) ? deflt_size : page_size,
   };
@@ -121,19 +187,18 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
   let respuesta = consultar_paginas(formData);
   respuesta
     .success(function (resultados) {
-      console.log(resultados);
       let paginas_list = resultados.paginas;
-      $("#herramientasPaginacion").generarTitulo(
+      $("#herramientasPaginacion-paginas").generarTitulo(
         formData.page,
         formData.page_size,
         paginas_list.total,
-        clickIndice
+        clickIndicePagina
       );
-      $("#herramientasPaginacion").generarIndices(
+      $("#herramientasPaginacion-paginas").generarIndices(
         formData.page,
         formData.page_size,
         paginas_list.total,
-        clickIndice
+        clickIndicePagina
       );
 
       $("#body-tabla-paginas tr").not(".filaTabla").remove();
@@ -143,12 +208,64 @@ $("#btn-buscar").click(function (e, pagina, page_size, columna, orden) {
           check: false,
         });
         $("#table-paginas tbody").append(
-          generarFilaTabla(paginas_list.data[i], "#body-tabla-paginas")
+          generarFilaTablaPaginas(paginas_list.data[i], "#body-tabla-paginas")
         );
       }
     })
     .error(function (data) {
-      console.log("Error:", data);
+      console.error("Error:", data);
+    });
+});
+
+$("#btn-buscar-denuncia").click(function (e, pagina, page_size, columna, orden) {
+  e.preventDefault();
+  const deflt_size = isNaN($("#herramientasPaginacion-denuncias").getPageSize())
+  ? 10
+    : $("#herramientasPaginacion-denuncias").getPageSize();
+  const sort_by =
+    columna != null
+      ? { columna: columna, orden: orden }
+      : {
+          columna: $("#table-denuncias .activa").attr("value"),
+          orden: $("#table-denuncias .activa").attr("estado"),
+        };
+
+  const formData = {
+    //usuario: $("#filtro-usuario").val(),
+    //page_url: $("#filtro-url").val(),
+    //fecha_cierre_definitivo_h: isoDate($("#dtpFechaCierreDefinitivoH")),
+    page:
+      pagina != null ? pagina : $("#herramientasPaginacion-denuncias").getCurrentPage(),
+    sort_by: sort_by,
+    page_size: page_size == null || isNaN(page_size) ? deflt_size : page_size,
+  };
+
+  let respuesta = consultar_denuncias(formData);
+  respuesta
+    .success(function (resultados) {
+      let denuncias_list = resultados.denuncias;
+      $("#herramientasPaginacion-denuncias").generarTitulo(
+        formData.page,
+        formData.page_size,
+        denuncias_list.total,
+        clickIndicePagina
+      );
+      $("#herramientasPaginacion-denuncias").generarIndices(
+        formData.page,
+        formData.page_size,
+        denuncias_list.total,
+        clickIndicePagina
+      );
+
+      $("#body-tabla-denuncias tr").not(".filaTabla").remove();
+      for (var i = 0; i < denuncias_list.data.length; i++) {
+        $("#table-denuncias tbody").append(
+          generarFilaTablaDenuncias(denuncias_list.data[i], "#body-tabla-denuncias")
+        );
+      }
+    })
+    .error(function (data) {
+      console.error("Error:", data);
     });
 });
 
@@ -181,7 +298,7 @@ $("#ipt-url").on("input", function () {
           }
         },
         error: function (data) {
-          console.log("Error:", data);
+          console.error("Error:", data);
         },
       });
       $("#ifm").attr("src", "https://api.thumbalizr.com/api/v1/embed/EMBED_API_KEY/TOKEN/?url="+url);
@@ -192,6 +309,46 @@ $("#ipt-url").on("input", function () {
   } else {
     $("#div-prev").addClass("hide");
   }
+});
+
+$("#btn-agregar-pagina-denuncia").click(function (e) {
+  e.preventDefault();
+  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  //$("#body-paginas-agregadas tr").not(".filaTabla").remove();
+  paginas.forEach((value, key) => {
+    if (value.check) {
+      value.check = false;
+      pag_denuncia_envio.set(key, value);
+      paginas.delete(key);
+      $("#table-paginas-agregadas").append(
+        generarFilaTablaPaginas(value, "#body-paginas-agregadas")
+      );
+    } else {
+      $("#table-paginas-no-agregadas").append(
+        generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
+      );
+    }
+  });
+});
+
+$("#btn-quitar-pagina-denuncia").click(function (e) {
+  e.preventDefault();
+  //$("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  $("#body-paginas-agregadas tr").not(".filaTabla").remove();
+  pag_denuncia_envio.forEach((value, key) => {
+    if (value.check) {
+      value.check = false;
+      paginas.set(key, value);
+      pag_denuncia_envio.delete(key);
+      $("#table-paginas-no-agregadas").append(
+        generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
+      );
+    } else {
+      $("#table-paginas-agregadas").append(
+        generarFilaTablaPaginas(value, "#body-paginas-agregadas")
+      );
+    }
+  });
 });
 
 $("#btn-guardar-page").on("click", function () {
@@ -222,7 +379,7 @@ $("#btn-guardar-page").on("click", function () {
       $("#mensajeExito h3").text("ÉXITO");
       $("#mensajeExito p").text("La Pagina se cargo correctamente");
       $("#mdl-agregar-pag").modal("hide");
-      $("#btn-buscar").trigger("click");
+      $("#btn-buscar-pagina").trigger("click");
       $("#mensajeExito").show();
     },
     error: function (data) {
@@ -237,64 +394,12 @@ $("#btn-guardar-page").on("click", function () {
   $("#mdl-agregar-pag").modal("show");
 });
 
-$("#btn-agregar-denuncia").click(function (e) {
-  e.preventDefault();
-  $("#mdl-agregar-den").modal("show");
-
-  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
-  paginas.forEach((value, key) => {
-    $("#table-paginas-no-agregadas").append(
-      generarFilaTabla(value, "#body-paginas-no-agregadas")
-    );
-  });
-});
-
-$("#btn-agregar-pagina-denuncia").click(function (e) {
-  e.preventDefault();
-  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
-  //$("#body-paginas-agregadas tr").not(".filaTabla").remove();
-  paginas.forEach((value, key) => {
-    if (value.check) {
-      value.check = false;
-      pag_denuncia_envio.set(key, value);
-      paginas.delete(key);
-      $("#table-paginas-agregadas").append(
-        generarFilaTabla(value, "#body-paginas-agregadas")
-      );
-    } else {
-      $("#table-paginas-no-agregadas").append(
-        generarFilaTabla(value, "#body-paginas-no-agregadas")
-      );
-    }
-  });
-});
-
-$("#btn-quitar-pagina-denuncia").click(function (e) {
-  e.preventDefault();
-  //$("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
-  $("#body-paginas-agregadas tr").not(".filaTabla").remove();
-  pag_denuncia_envio.forEach((value, key) => {
-    if (value.check) {
-      value.check = false;
-      paginas.set(key, value);
-      pag_denuncia_envio.delete(key);
-      $("#table-paginas-no-agregadas").append(
-        generarFilaTabla(value, "#body-paginas-no-agregadas")
-      );
-    } else {
-      $("#table-paginas-agregadas").append(
-        generarFilaTabla(value, "#body-paginas-agregadas")
-      );
-    }
-  });
-});
-
 $("#btn-guardar-den").click(function (e) {
   e.preventDefault();
-  let paginas_ids =pag_denuncia_envio.keys();
   let formData = new FormData();
-  if (paginas_ids.length > 0) {
-    formData.append("paginas_id", paginas_ids);
+  let paginas_ids = pag_denuncia_envio.keys();
+  for (let id of paginas_ids) {
+      formData.append("paginas_id[]", id);
   }
   $.ajaxSetup({
     headers: {
@@ -313,7 +418,7 @@ $("#btn-guardar-den").click(function (e) {
       $("#mensajeExito h3").text("ÉXITO");
       $("#mensajeExito p").text("La Denuncia se cargo correctamente");
       $("#mdl-agregar-den").modal("hide");
-      $("#btn-buscar").trigger("click");
+      $("#btn-buscar-pagina").trigger("click");
       $("#mensajeExito").show();
     },
     error: function (data) {
@@ -325,23 +430,5 @@ $("#btn-guardar-den").click(function (e) {
       );
     },
   });
-  $("#mdl-agregar-pag").modal("show");
 })
-/**
- *   let respuesta = consultar_paginas(formData);
-  respuesta
-    .success(function (resultados) {
-      console.log(resultados);
-      let paginas_list = resultados.paginas;
 
-      $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
-      for (var i = 0; i < paginas_list.data.length; i++) {
-        $("#table-paginas-no-agregadas").append(
-          generarFilaTabla(paginas_list.data[i], "#body-paginas-no-agregadas")
-        );
-      }
-    })
-    .error(function (data) {
-      console.log("Error:", data);
-    });
- */

@@ -31,7 +31,7 @@ class PaginasController extends Controller
 
     public static function getInstancia($actualizar = true){
       if (!isset(self::$instance)){
-          self::$instance = new Paginas($actualizar);
+          self::$instance = new PaginasController($actualizar);
       }
       return self::$instance;
     }
@@ -56,7 +56,6 @@ class PaginasController extends Controller
       $nueva_pagina->save();
       return response()->json(['pagina' => $nueva_pagina], Response::HTTP_OK);
     }
-
 
     public function obtener_paginas(Request $req){
       $reglas = Array();
@@ -117,9 +116,26 @@ class PaginasController extends Controller
       $resultados = DB::table('paginas')->where('pag_url', '=', $req->pag_url)->get();
       return response()->json(['paginas' => $resultados]);
     }
+
+    public function actualizar_estatado(Pagina $pagina){
+      $err = false;
+      try {
+        $estado = EstadoPagina::find(2);
+        if (!$estado) {
+          throw new Exception("El estado no fue encontrado.");
+        }
+        $pagina->estado()->associate($estado);
+        $pagina->save();
+      } catch (Exception $e) {
+        $err = true;
+        Log::error('Error al actualizar el estado de la página: ' . $e->getMessage());
+      } finally {
+        return $err;
+      }
+    }
     // Metodos internos 
     public function obtener_paginas_by_id($list){
-      $paginas = Pagina::whereIn('id_paginas', $list->paginas_id)->get();
+      $paginas = Pagina::whereIn('id_pagina', $list)->get();
       return $paginas;
     }
     // Utiles

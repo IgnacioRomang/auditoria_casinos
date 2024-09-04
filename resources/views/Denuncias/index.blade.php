@@ -146,10 +146,10 @@
               <div class="row">
                   <div class="col-md-12">
                       <div id="contenedorFiltros" class="panel panel-default">
-                          <div class="panel-heading" data-toggle="collapse" href="#collapseFiltros" style="cursor: pointer">
-                              <h4>Filtros de Búsqueda <i class="fa fa-fw fa-angle-down"></i></h4>
+                          <div class="panel-heading" data-toggle="collapse" href="#collapse-filtros-paginas" style="cursor: pointer">
+                              <h4>Filtros de Búsqueda Paginas<i class="fa fa-fw fa-angle-down"></i></h4>
                           </div>
-                          <div id="collapseFiltros" class="panel-collapse collapse">
+                          <div id="collapse-filtros-paginas" class="panel-collapse collapse">
                               <div class="panel-body">
                                   <div class="row">
                                       <div class="col-md-2">
@@ -171,7 +171,28 @@
                                       <br>
                                       <div class="row">
                                           <center>
-                                              <button id="btn-buscar" class="btn btn-infoBuscar" type="button"><i
+                                              <button id="btn-buscar-pagina" class="btn btn-infoBuscar" type="button"><i
+                                                      class="fa fa-fw fa-search"></i> BUSCAR</button>
+                                          </center>
+                                      </div>
+                                      <br>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="panel-heading" data-toggle="collapse" href="#collapse-filtros-denuncias" style="cursor: pointer">
+                              <h4>Filtros de Búsqueda Denuncias<i class="fa fa-fw fa-angle-down"></i></h4>
+                          </div>
+                          <div id="collapse-filtros-denuncias" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <div class="row">
+                                      <div class="col-md-2">
+                                          <h5>URL/LINK</h5>
+                                          <input class="form-control" id="filtro-url" value="" />
+                                      </div>
+                                      <br>
+                                      <div class="row">
+                                          <center>
+                                              <button id="btn-buscar-denuncia" class="btn btn-infoBuscar" type="button"><i
                                                       class="fa fa-fw fa-search"></i> BUSCAR</button>
                                           </center>
                                       </div>
@@ -215,7 +236,7 @@
                                       </tr>
                                   </tbody>
                               </table>
-                              <div id="herramientasPaginacion" class="row zonaPaginacion"></div>
+                              <div id="herramientasPaginacion-paginas" class="row zonaPaginacion"></div>
                           </div>
                       </div>
                   </div>
@@ -229,27 +250,27 @@
                                   automaitcamente.</p>
                           </div>
                           <div class="panel-body">
-                              <table id="table-denuncia" class="table table-fixed tablesorter">
+                              <table id="table-denuncias" class="table table-fixed tablesorter">
                                   <thead>
                                       <tr>
-                                          <th class="col-xs-2" value="paginas-usuario" estado="">NUMERO<i
+                                          <th class="col-xs-2" value="denuncia-id" estado="">NUMERO<i
                                                   class="fa fa-sort"></i></th>
-                                          <th class="col-xs-2" value="paginas-pagina" estado="">PAGINAS<i
+                                          <th class="col-xs-2" value="denuncia-pagina" estado="">PAGINAS<i
                                                   class="fa fa-sort"></i>
                                           </th>
-                                          <th class="col-xs-2" value="paginas-estado" estado="">ESTADO<i
+                                          <th class="col-xs-3" value="denuncia-estado" estado="">ESTADO<i
                                                   class="fa fa-sort"></i></th>
-                                          <th class="col-xs-3" value="paginas-creado" estado="">F. CREACIÓN<i
+                                          <th class="col-xs-3" value="denuncia-creado" estado="">F. CREACIÓN<i
                                                   class="fa fa-sort"></i></th>
-                                          <th class="col-xs-2" value="paginas-creado" estado="">ACCIONES</th>
+                                          <th class="col-xs-2" value="denuncia-creado" estado="">ACCIONES</th>
                                       </tr>
                                   </thead>
-                                  <tbody id="body-tabla-denuncia" style="height: 350px;">
+                                  <tbody id="body-tabla-denuncias" style="height: 350px;">
                                       <tr class="filaTabla" style="display: none">
-                                          <td class="col-xs-2 paginas-usuario"></td>
-                                          <td class="col-xs-2 paginas-pagina"></td>
-                                          <td class="col-xs-2 paginas-estado"></td>
-                                          <td class="col-xs-3 paginas-creado"></td>
+                                          <td class="col-xs-2 denuncia-id"></td>
+                                          <td class="col-xs-2 denuncia-pagina"></td>
+                                          <td class="col-xs-3 denuncia-estado"></td>
+                                          <td class="col-xs-3 denuncia-creado"></td>
                                           <td class="col-xs-2 acciones">
                                               <button id="btn-ver-as" class="btn btn-info info" type="button"
                                                   value="" title="VER MÁS" data-toggle="tooltip"
@@ -266,7 +287,7 @@
                                       </tr>
                                   </tbody>
                               </table>
-                              <div id="herramientasPaginacion2" class="row zonaPaginacion"></div>
+                              <div id="herramientasPaginacion-denuncias" class="row zonaPaginacion"></div>
                           </div>
                       </div>
                   </div>

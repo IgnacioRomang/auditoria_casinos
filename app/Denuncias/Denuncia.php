@@ -4,6 +4,9 @@ namespace App\Denuncias;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Denuncias\Pagina;
+use App\Denuncias\EstadoDenuncia;
+
 class Denuncia extends Model
 {
   use SoftDeletes;
@@ -13,10 +16,10 @@ class Denuncia extends Model
   protected $primaryKey = 'id_denuncia';
  
   public function estado(){
-    return $this->belongsTo('App\Denuncias\EstadoDenuncia','id_estado','id_estado');
+    return $this->belongsTo(EstadoDenuncia::class,'id_denuncia_estados','id_denuncia_estados');
   }
 
   public function paginas() { 
-    return $this->belongsToMany('App\Denuncias\Pagina','pagina_en_denunciada','id_denuncia','id_denuncia');
+    return $this->belongsToMany(Pagina::class,'pagina_en_denunciada','id_denuncia', 'id_pagina');
   }
 }

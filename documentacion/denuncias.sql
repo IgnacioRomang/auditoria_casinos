@@ -49,7 +49,7 @@ CREATE TABLE `pagina_en_denunciada` (
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
     `deleted_at` TIMESTAMP NULL DEFAULT NULL,
-    FOREIGN KEY (`id_denuncia`) REFERENCES `paginas`(`id_pagina`),
+    FOREIGN KEY (`id_denuncia`) REFERENCES `denuncias`(`id_denuncia`),
     FOREIGN KEY ( `id_pagina`) REFERENCES `paginas`(`id_pagina`),
     PRIMARY KEY (`id_pagina`,`id_denuncia`)
 )

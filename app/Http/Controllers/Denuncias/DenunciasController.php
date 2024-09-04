@@ -57,8 +57,20 @@ class DenunciasController extends Controller
       if ($validator->fails()) {
         return response()->json($validator->errors(), Response::HTTP_BAD_REQUEST);
       }
-      //$paginas = PaginasController::getInstancia()->obtener_paginas_by_id($req->paginas_id);
-      $nueva_denuncia = $this->crea_denuncia($req->paginas_id);
+      $paginas = PaginasController::getInstancia()->obtener_paginas_by_id($req->paginas_id);
+      $nueva_denuncia = new Denuncia();
+      $estado = EstadoDenuncia::find(1);
+      // relacion many to one 
+      $nueva_denuncia->estado()->associate($estado);
+      $nueva_denuncia->save();
+      foreach ($paginas as $pagina){
+        $err = PaginasController::getInstancia()->actualizar_estatado($pagina);
+        if($err){
+          // relacion many to many
+          $nueva_denuncia->paginas()->attach($paginas->id_pagina);
+          $paginas->denuncia()->attach($nueva_denuncia->id_denuncia);
+        }
+      }
       $nueva_denuncia->save();
       return response()->json(['denuncia' => $nueva_denuncia], Response::HTTP_OK);
     }
@@ -66,20 +78,16 @@ class DenunciasController extends Controller
     public function obtener_denuncias(Request $req){
       $reglas = Array();
       $filters = [
-        'usuario' => 'paginas.usuario',
-        'url' => 'paginas.pagina',
         'page_url' => 'paginas.pag_url',
-        'fecha_creacion_ini' => 'paginas.created_at',
-        'fecha_creacion_fin' => 'paginas.created_at',
-        'fecha_denuncia_ini' => 'paginas.fecha_denuncia',
-        'fecha_denuncia_fin' => 'paginas.fecha_denuncia',
+        'fecha_creacion_ini' => 'denuncias.created_at',
+        'fecha_creacion_fin' => 'denuncias.created_at',
+        'fecha_denuncia_ini' => 'denuncias.fecha_denuncia',
+        'fecha_denuncia_fin' => 'denuncias.fecha_denuncia',
       ];
       
       foreach($filters as $key => $column){
         if (!empty($req->$key)) {
           switch($key){
-            case 'usuario':
-            case 'url':
             case 'page_url':
               $reglas[] = [$column, 'LIKE','%' . $req->$key . '%'];
               break;
@@ -96,40 +104,29 @@ class DenunciasController extends Controller
           }
         }
       }
-      $sort_by = ['columna' => 'paginas.id_pagina', 'orden' => 'desc'];
+      $sort_by = ['columna' => 'denuncias.id_denuncia', 'orden' => 'desc'];
       if(!empty($req->sort_by)){
         $sort_by = $req->sort_by;
       }
 
-      $resultados = DB::table('paginas')
-        ->join('paginas_estados'         , 'paginas.id_estado' , '=' , 'paginas_estados.id_estado')
-        ->whereNull('paginas.deleted_at')
+      $resultados = DB::table('denuncias')
+        ->select('denuncias.*',
+                  'denuncia_estados.descripcion as estado_descripcion',
+                  DB::raw('COUNT(DISTINCT pagina_en_denunciada.id_pagina) as paginas_count')
+                  )
+        ->leftJoin('denuncia_estados', 'denuncia_estados.id_denuncia_estados' , '=' , 'denuncias.id_denuncia_estados')
+        ->leftJoin('pagina_en_denunciada', 'denuncias.id_denuncia', '=', 'pagina_en_denunciada.id_denuncia')
+        ->whereNull('denuncias.deleted_at')
         ->when($sort_by,function($query) use ($sort_by){
           return $query->orderBy($sort_by['columna'],$sort_by['orden']);
         })
         ->where($reglas)
+        ->groupBy('denuncias.id_denuncia', 'denuncia_estados.descripcion')
         ->paginate($req->page_size);
 
-      return response()->json(['paginas' => $resultados]);
+      return response()->json(['denuncias' => $resultados]);
     }
     
-    public function existe_pagina(Request $req){
-      $validator = Validator::make($req->all(), [
-        'pag_url' => 'required'], array(), self::$atributos);
-      if ($validator->fails()) {
-        return response()->json($validator->errors(), Response::HTTP_BAD_REQUEST);
-      }
-      $resultados = DB::table('paginas')->where('pag_url', '=', $req->pag_url)->get();
-      return response()->json(['paginas' => $resultados]);
-    }
 
     // Utiles
-
-    private function crea_denuncia($paginas){
-      $denuncia = new Denuncia();
-      $estado = EstadoDenuncia::find(1);
-      $denuncia->estado()->associate($estado);
-      $denuncia->paginas()->sync($paginas);
-      return $denuncia;
-    }
 }

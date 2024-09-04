@@ -982,4 +982,5 @@ Route::group(['prefix' => 'paginas'], function () {
 Route::group(['prefix' => 'denuncias'], function () {
   Route::get('/','Denuncias\DenunciasController@index');
   Route::post('/agregar','Denuncias\DenunciasController@agregar_denuncia_nueva');
+  Route::get('list','Denuncias\DenunciasController@obtener_denuncias');
 });
