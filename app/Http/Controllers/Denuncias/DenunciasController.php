@@ -68,7 +68,7 @@ class DenunciasController extends Controller
         if($err){
           // relacion many to many
           $nueva_denuncia->paginas()->attach($paginas->id_pagina);
-          $paginas->denuncia()->attach($nueva_denuncia->id_denuncia);
+          //$paginas->denuncia()->attach($nueva_denuncia->id_denuncia);
         }
       }
       $nueva_denuncia->save();
@@ -112,10 +112,10 @@ class DenunciasController extends Controller
       $resultados = DB::table('denuncias')
         ->select('denuncias.*',
                   'denuncia_estados.descripcion as estado_descripcion',
-                  DB::raw('COUNT(DISTINCT pagina_en_denunciada.id_pagina) as paginas_count')
+                  DB::raw('COUNT(DISTINCT denuncias_paginas.id_pagina) as paginas_count')
                   )
         ->leftJoin('denuncia_estados', 'denuncia_estados.id_denuncia_estados' , '=' , 'denuncias.id_denuncia_estados')
-        ->leftJoin('pagina_en_denunciada', 'denuncias.id_denuncia', '=', 'pagina_en_denunciada.id_denuncia')
+        ->leftJoin('denuncias_paginas', 'denuncias.id_denuncia', '=', 'denuncias_paginas.id_denuncia')
         ->whereNull('denuncias.deleted_at')
         ->when($sort_by,function($query) use ($sort_by){
           return $query->orderBy($sort_by['columna'],$sort_by['orden']);

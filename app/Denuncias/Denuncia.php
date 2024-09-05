@@ -20,6 +20,6 @@ class Denuncia extends Model
   }
 
   public function paginas() { 
-    return $this->belongsToMany(Pagina::class,'pagina_en_denunciada','id_denuncia', 'id_pagina');
+    return $this->belongsToMany(Pagina::class,'denuncias_paginas','id_denuncia', 'id_pagina');
   }
 }

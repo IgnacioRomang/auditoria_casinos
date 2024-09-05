@@ -40,7 +40,6 @@ function clickIndiceDenuncia(e, pageNumber, tam, tabla) {
   $("#btn-buscar-denuncia").trigger("click", [pageNumber, tam, columna, orden]);
 }
 
-
 function generarFilaTablaPaginas(datos, tablabody) {
   // agrega los datos en una fila, sirve para las tablas pequeñas y grandes
   let fila = $(tablabody + " .filaTabla")
@@ -134,6 +133,7 @@ function consultar_denuncias(formData) {
     dataType: "json",
   });
 }
+
 //
 $("#btn-minimizar").click(function () {
   if ($(this).data("minimizar") == true) {
@@ -155,9 +155,11 @@ $("#btn-agregar-denuncia").click(function (e) {
   $("#mdl-agregar-den").modal("show");
   $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
   paginas.forEach((value, key) => {
-    $("#table-paginas-no-agregadas").append(
-      generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
-    );
+    if(value.id_estado <= 1){
+      $("#table-paginas-no-agregadas").append(
+        generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
+      );
+    }
   });
 });
 
@@ -375,7 +377,7 @@ $("#btn-guardar-page").on("click", function () {
     processData: false,
     dataType: "json",
     success: function (resultados) {
-      console.log("Exito:", resultados);
+      //console.log("Exito:", resultados);
       $("#mensajeExito h3").text("ÉXITO");
       $("#mensajeExito p").text("La Pagina se cargo correctamente");
       $("#mdl-agregar-pag").modal("hide");
@@ -418,7 +420,9 @@ $("#btn-guardar-den").click(function (e) {
       $("#mensajeExito h3").text("ÉXITO");
       $("#mensajeExito p").text("La Denuncia se cargo correctamente");
       $("#mdl-agregar-den").modal("hide");
+      //actualizo las tablas de denuncias y de paginas por el cmabio de estado
       $("#btn-buscar-pagina").trigger("click");
+      $("#btn-buscar-denuncia").trigger("click");
       $("#mensajeExito").show();
     },
     error: function (data) {
