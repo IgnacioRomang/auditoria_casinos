@@ -117,27 +117,6 @@ class PaginasController extends Controller
       return response()->json(['paginas' => $resultados]);
     }
 
-    public function actualizar_estatado(Pagina $pagina){
-      $err = false;
-      try {
-        $estado = EstadoPagina::find(2);
-        if (!$estado) {
-          throw new Exception("El estado no fue encontrado.");
-        }
-        $pagina->estado()->associate($estado);
-        $pagina->save();
-      } catch (Exception $e) {
-        $err = true;
-        Log::error('Error al actualizar el estado de la página: ' . $e->getMessage());
-      } finally {
-        return $err;
-      }
-    }
-    // Metodos internos 
-    public function obtener_paginas_by_id($list){
-      $paginas = Pagina::whereIn('id_pagina', $list)->get();
-      return $paginas;
-    }
     // Utiles
     private function crea_pagina($req){
       $nueva_pagina = new Pagina();

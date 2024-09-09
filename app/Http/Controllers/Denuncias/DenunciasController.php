@@ -22,6 +22,7 @@ use Illuminate\Validation\Rule;
 use App\Denuncias\Denuncia;
 use App\Denuncias\Pagina;
 use App\Denuncias\EstadoDenuncia;
+use App\Denuncias\EstadoPagina;
 
 class DenunciasController extends Controller
 {
@@ -52,26 +53,30 @@ class DenunciasController extends Controller
 
     public function agregar_denuncia_nueva(Request $req){
       $validator = Validator::make($req->all(), [
-        'paginas_id' => 'required|array'], array(), self::$atributos);
+        'paginas_id' => 'required|array',
+       'paginas_id.*' => 'integer|exists:paginas,id_pagina'], array(), self::$atributos);
 
       if ($validator->fails()) {
         return response()->json($validator->errors(), Response::HTTP_BAD_REQUEST);
       }
-      $paginas = PaginasController::getInstancia()->obtener_paginas_by_id($req->paginas_id);
+      $paginas = Pagina::whereIn('id_pagina',$req->paginas_id)->get();
+      if (!$paginas || $paginas->isEmpty()) {
+        return response()->json(['error' => 'Páginas no encontradas'], Response::HTTP_NOT_FOUND);
+      }
       $nueva_denuncia = new Denuncia();
       $estado = EstadoDenuncia::find(1);
       // relacion many to one 
       $nueva_denuncia->estado()->associate($estado);
       $nueva_denuncia->save();
+      $estado_denunciado = EstadoPagina::find(2);
       foreach ($paginas as $pagina){
-        $err = PaginasController::getInstancia()->actualizar_estatado($pagina);
-        if($err){
-          // relacion many to many
-          $nueva_denuncia->paginas()->attach($paginas->id_pagina);
-          //$paginas->denuncia()->attach($nueva_denuncia->id_denuncia);
-        }
+        // Simplemente toma las pagina y actualiza el estado a "Denunciado"
+        $pagina->estado()->dissociate();
+        $pagina->estado()->associate($estado_denunciado);
+        $pagina->save();
+        $nueva_denuncia->paginas()->attach($pagina->id_pagina);
       }
-      $nueva_denuncia->save();
+      
       return response()->json(['denuncia' => $nueva_denuncia], Response::HTTP_OK);
     }
 

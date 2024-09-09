@@ -14,7 +14,7 @@ $(document).ready(function () {
 const convertir_fecha = function (fecha) {
   [date, hour] = fecha.split(" ");
   [yyyy, mm, dd] = date.split("-");
-  return yyyy + "/" + mm + "/" + dd ;
+  return yyyy + "/" + mm + "/" + dd;
 };
 
 // SI SON DOS METODOS IGUALES PERO COMO generarIndices NO SE DONDE SE ENCUENTRA
@@ -24,7 +24,8 @@ function clickIndicePagina(e, pageNumber, tam) {
   if (e != null) {
     e.preventDefault();
   }
-  var tam = tam != null ? tam : $("#herramientasPaginacion-paginas").getPageSize();
+  var tam =
+    tam != null ? tam : $("#herramientasPaginacion-paginas").getPageSize();
   var columna = $("#table-paginas .activa").attr("value");
   var orden = $("#table-paginas .activa").attr("estado");
   $("#btn-buscar-pagina").trigger("click", [pageNumber, tam, columna, orden]);
@@ -34,7 +35,8 @@ function clickIndiceDenuncia(e, pageNumber, tam, tabla) {
   if (e != null) {
     e.preventDefault();
   }
-  var tam = tam != null ? tam : $("#herramientasPaginacion-denuncia").getPageSize();
+  var tam =
+    tam != null ? tam : $("#herramientasPaginacion-denuncia").getPageSize();
   var columna = $("#table-denuncia .activa").attr("value");
   var orden = $("#table-denuncia .activa").attr("estado");
   $("#btn-buscar-denuncia").trigger("click", [pageNumber, tam, columna, orden]);
@@ -56,7 +58,7 @@ function generarFilaTablaPaginas(datos, tablabody) {
     .find(".paginas-estado")
     .text(datos.descripcion)
     .attr("title", datos.descripcion);
-  fila.find(".paginas-marcado .form-check-input").prop("checked", datos.check)
+  fila.find(".paginas-marcado .form-check-input").prop("checked", datos.check);
   fila.find(".paginas-marcado .form-check-input").on("change", function () {
     let isChecked = $(this).prop("checked");
     let pagina = paginas.get(datos.id_pagina);
@@ -87,7 +89,10 @@ function generarFilaTablaDenuncias(datos, tablabody) {
     .find(".denuncia-id")
     .text(datos.id_denuncia)
     .attr("title", datos.id_denuncia);
-  fila.find(".denuncia-pagina").text(datos.paginas_count).attr("title", datos.paginas_count);
+  fila
+    .find(".denuncia-pagina")
+    .text(datos.paginas_count)
+    .attr("title", datos.paginas_count);
   fila
     .find(".denuncia-estado")
     .text(datos.estado_descripcion)
@@ -134,6 +139,14 @@ function consultar_denuncias(formData) {
   });
 }
 
+function clear_agregar_pagina() {
+  $("#ipt-usuario").val("");
+  $("#ipt-url").val("");
+}
+function clear_agregar_denuncias() {
+  $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  $("#body-paginas-agregadas tr").not(".filaTabla").remove();
+}
 //
 $("#btn-minimizar").click(function () {
   if ($(this).data("minimizar") == true) {
@@ -148,14 +161,17 @@ $("#btn-minimizar").click(function () {
 $("#btn-agregar-pagina").click(function (e) {
   e.preventDefault();
   $("#mdl-agregar-pag").modal("show");
+  clear_agregar_pagina();
 });
 
 $("#btn-agregar-denuncia").click(function (e) {
   e.preventDefault();
   $("#mdl-agregar-den").modal("show");
   $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
+  $("#body-paginas-agregadas tr").not(".filaTabla").remove();
+  pag_denuncia_envio.clear();
   paginas.forEach((value, key) => {
-    if(value.id_estado <= 1){
+    if (value.id_estado == 1) {
       $("#table-paginas-no-agregadas").append(
         generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
       );
@@ -166,7 +182,7 @@ $("#btn-agregar-denuncia").click(function (e) {
 $("#btn-buscar-pagina").click(function (e, pagina, page_size, columna, orden) {
   e.preventDefault();
   const deflt_size = isNaN($("#herramientasPaginacion-paginas").getPageSize())
-  ? 10
+    ? 10
     : $("#herramientasPaginacion-paginas").getPageSize();
   const sort_by =
     columna != null
@@ -181,7 +197,9 @@ $("#btn-buscar-pagina").click(function (e, pagina, page_size, columna, orden) {
     page_url: $("#filtro-url").val(),
     //fecha_cierre_definitivo_h: isoDate($("#dtpFechaCierreDefinitivoH")),
     page:
-      pagina != null ? pagina : $("#herramientasPaginacion-paginas").getCurrentPage(),
+      pagina != null
+        ? pagina
+        : $("#herramientasPaginacion-paginas").getCurrentPage(),
     sort_by: sort_by,
     page_size: page_size == null || isNaN(page_size) ? deflt_size : page_size,
   };
@@ -204,6 +222,7 @@ $("#btn-buscar-pagina").click(function (e, pagina, page_size, columna, orden) {
       );
 
       $("#body-tabla-paginas tr").not(".filaTabla").remove();
+      paginas.clear();
       for (var i = 0; i < paginas_list.data.length; i++) {
         paginas.set(paginas_list.data[i].id_pagina, {
           ...paginas_list.data[i],
@@ -219,10 +238,16 @@ $("#btn-buscar-pagina").click(function (e, pagina, page_size, columna, orden) {
     });
 });
 
-$("#btn-buscar-denuncia").click(function (e, pagina, page_size, columna, orden) {
+$("#btn-buscar-denuncia").click(function (
+  e,
+  pagina,
+  page_size,
+  columna,
+  orden
+) {
   e.preventDefault();
   const deflt_size = isNaN($("#herramientasPaginacion-denuncias").getPageSize())
-  ? 10
+    ? 10
     : $("#herramientasPaginacion-denuncias").getPageSize();
   const sort_by =
     columna != null
@@ -237,7 +262,9 @@ $("#btn-buscar-denuncia").click(function (e, pagina, page_size, columna, orden) 
     //page_url: $("#filtro-url").val(),
     //fecha_cierre_definitivo_h: isoDate($("#dtpFechaCierreDefinitivoH")),
     page:
-      pagina != null ? pagina : $("#herramientasPaginacion-denuncias").getCurrentPage(),
+      pagina != null
+        ? pagina
+        : $("#herramientasPaginacion-denuncias").getCurrentPage(),
     sort_by: sort_by,
     page_size: page_size == null || isNaN(page_size) ? deflt_size : page_size,
   };
@@ -262,7 +289,10 @@ $("#btn-buscar-denuncia").click(function (e, pagina, page_size, columna, orden) 
       $("#body-tabla-denuncias tr").not(".filaTabla").remove();
       for (var i = 0; i < denuncias_list.data.length; i++) {
         $("#table-denuncias tbody").append(
-          generarFilaTablaDenuncias(denuncias_list.data[i], "#body-tabla-denuncias")
+          generarFilaTablaDenuncias(
+            denuncias_list.data[i],
+            "#body-tabla-denuncias"
+          )
         );
       }
     })
@@ -291,10 +321,12 @@ $("#ipt-url").on("input", function () {
         dataType: "json",
         success: function (resultados) {
           console.log("Exito:", resultados);
-          let pags = resultados.paginas
-          if(pags.length>0){
+          let pags = resultados.paginas;
+          if (pags.length > 0) {
             $("#mensajeError h3").text("ERROR");
-            $("#mensajeError p").text("La pagina ya existe, verifique si fue denunciada o no");
+            $("#mensajeError p").text(
+              "La pagina ya existe, verifique si fue denunciada o no"
+            );
             //$("#mdl-agregar-pag").modal("hide");
             $("#mensajeError").show();
           }
@@ -303,7 +335,11 @@ $("#ipt-url").on("input", function () {
           console.error("Error:", data);
         },
       });
-      $("#ifm").attr("src", "https://api.thumbalizr.com/api/v1/embed/EMBED_API_KEY/TOKEN/?url="+url);
+      $("#ifm").attr(
+        "src",
+        "https://api.thumbalizr.com/api/v1/embed/EMBED_API_KEY/TOKEN/?url=" +
+          url
+      );
       $("#div-prev").removeClass("hide");
     } else {
       $("#div-prev").addClass("hide");
@@ -318,17 +354,20 @@ $("#btn-agregar-pagina-denuncia").click(function (e) {
   $("#body-paginas-no-agregadas tr").not(".filaTabla").remove();
   //$("#body-paginas-agregadas tr").not(".filaTabla").remove();
   paginas.forEach((value, key) => {
-    if (value.check) {
-      value.check = false;
-      pag_denuncia_envio.set(key, value);
-      paginas.delete(key);
-      $("#table-paginas-agregadas").append(
-        generarFilaTablaPaginas(value, "#body-paginas-agregadas")
-      );
-    } else {
-      $("#table-paginas-no-agregadas").append(
-        generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
-      );
+    console.log(value);
+    if (value.id_estado == 1) {
+      if (value.check) {
+        value.check = false;
+        pag_denuncia_envio.set(key, value);
+        paginas.delete(key);
+        $("#table-paginas-agregadas").append(
+          generarFilaTablaPaginas(value, "#body-paginas-agregadas")
+        );
+      } else {
+        $("#table-paginas-no-agregadas").append(
+          generarFilaTablaPaginas(value, "#body-paginas-no-agregadas")
+        );
+      }
     }
   });
 });
@@ -386,6 +425,8 @@ $("#btn-guardar-page").on("click", function () {
     },
     error: function (data) {
       console.log("Error:", data);
+      $("#mdl-agregar-pag").modal("hide");
+
       mostrarErrorValidacion(
         $("#mdl-agregar-pag"),
         "Verifique que completo todos los campos",
@@ -393,6 +434,7 @@ $("#btn-guardar-page").on("click", function () {
       );
     },
   });
+  clear_agregar_pagina();
   $("#mdl-agregar-pag").modal("show");
 });
 
@@ -401,7 +443,7 @@ $("#btn-guardar-den").click(function (e) {
   let formData = new FormData();
   let paginas_ids = pag_denuncia_envio.keys();
   for (let id of paginas_ids) {
-      formData.append("paginas_id[]", id);
+    formData.append("paginas_id[]", id);
   }
   $.ajaxSetup({
     headers: {
@@ -427,6 +469,7 @@ $("#btn-guardar-den").click(function (e) {
     },
     error: function (data) {
       console.log("Error:", data);
+      $("#mdl-agregar-den").modal("hide");
       mostrarErrorValidacion(
         $("#mdl-agregar-den"),
         "Verifique que la denuncia tenga al menos una pagina",
@@ -434,5 +477,6 @@ $("#btn-guardar-den").click(function (e) {
       );
     },
   });
-})
-
+  pag_denuncia_envio.clear();
+  clear_agregar_denuncias();
+});
